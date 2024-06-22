@@ -1,0 +1,210 @@
+---
+title: "ASSIGNMENT 1"
+author: "Sayinah Ali: 23206263"
+format:
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: moon 
+output:
+  revealjs:
+    center: true             
+    slideNumber: true        
+    controls: true           
+    progress: true           
+    history: true            
+    transition: slide        
+    width: 1200              
+    height: 800              
+    incremental: true        
+    highlight: tango         
+    code_folding: show       
+---
+
+## 1. Reading the data
+
+-   **Objective**: In this presentation, we will analyze the Human Development Indicators (HDI) for two countries. We will use the `data.table` package in R for data manipulation and `ggplot2` for visualization
+
+```{r, echo = TRUE}
+#install.packages("revealjs")
+#install.packages("data.table")
+```
+
+```{r setup, include=FALSE}
+library(data.table)
+#update.packages("data.table")  # Update to the latest version
+library(ggplot2)
+```
+
+```{r, echo = TRUE}
+# Defining the file paths for the data sets:
+dataset1 <- "/Users/sayinahali/Documents/Sayinah/Applications/UNIVERSITIES/UCD/University/SEM-3/Adv R/Assignment-1/hdro_indicators_ind.csv"
+dataset2 <- "/Users/sayinahali/Documents/Sayinah/Applications/UNIVERSITIES/UCD/University/SEM-3/Adv R/Assignment-1/hdro_indicators_irl.csv"
+
+# Reading the data using data.table:
+country_1 <- fread(dataset1)
+country_2 <- fread(dataset2)
+
+country_1
+country_2
+
+```
+
+## 2. Merging the Datasets
+
+-   **Objective**: Combining the two datasets (`hdro_ind` and `hdro_irl`) into one (`merged_hdro`) using the rbind fuction
+
+    -   Displaying the first few rows (`head`) of the merged dataset to inspect the structure and ensure the merge was successful.
+
+```{r, echo=TRUE}
+# Merging the data sets:
+data_merged <- rbind(country_1, country_2)
+
+# Viewing the merged data:
+head(data_merged)
+```
+
+## 3. Data exploration
+
+-   **Objective**: Perform basic data exploration and preprocessing on `merged_hdro`.
+
+    -   Converting the `value` column to numeric.
+
+    -   Computing a summary of the dataset to understand its distribution and characteristics.
+
+    -   Calculating quantiles of the value column to identify key statistical measures (25th, 50th, and 75th percentiles).
+
+```{r, echo=TRUE}
+#Summary of Country1:
+print("Summary of Country1:")
+summary(country_1)
+
+#Summary of Country2:
+print("Summary of Country2:")
+summary(country_2)
+
+# Summary of the merged data:
+print("Summary of merged countries data:")
+summary(data_merged)
+
+# Checking for the missing values:
+colSums(is.na(data_merged))
+```
+
+## 4. Analysis using data.table
+
+-   **Objective**: Perform deeper analysis using `data.table` functionalities on `merged_hdro`.
+
+    -   Calculate summary statistics (`mean`, `median`, `min`, `max`, `sd`) by `country_name` and `year` using `data.table` syntax (`keyby`).
+
+```{r,echo=TRUE}
+# Ensuring if the 'value' column is numeric:
+data_merged[, value := as.numeric(value)]
+
+# Analyzing by using data.table and keyby argument:
+analysis_outcome <- data_merged[, .(
+  mean_value = base::mean(value, na.rm=TRUE),
+  median_value = median(value, na.rm=TRUE),
+  min_val = min(value, na.rm=TRUE),
+  max_val = max(value, na.rm=TRUE)
+), keyby = .(country_name, year)]
+
+# Displaying the analysis outcome:
+print(analysis_outcome)
+```
+
+## 5. Plotting
+
+-   **Objective**: Visualizing insights derived from the data using `ggplot2`.
+
+    -   Create a bar plot showing the mean value by `country_name`.
+
+    -   Generate a line plot illustrating the mean value trends over `year` for each `country_name`.
+    
+Plot 1: Results Mean HDI Over the Time:
+```{r,echo=TRUE}
+#Ploting the mean value across the time for each counry:
+ggplot(data = analysis_outcome, aes(x = year, y = mean_value, color = country_name, group = country_name)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean Values Over Time for Each Country",
+       x = "Year",
+       y = "Mean Value",
+       color = "Country") +
+  theme_minimal()
+```
+Interpretation of Plot-1:
+The plot shows the mean HDI values for India and Ireland over time, indicating a general upward trend in HDI for both countries, with Ireland consistently having higher mean values compared to India.
+
+Plot 2: Median Income Over the Time:
+```{r, echo = TRUE}
+# Ploting the median values over time for each country:
+ggplot(data = analysis_outcome, aes(x = year, y = median_value, color = country_name, group = country_name)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Median Values Over Time for Each Country",
+       x = "Year",
+       y = "Median Value",
+       color = "Country") +
+  theme_minimal()
+```
+Interpretation of Plot-2:
+This plot highlights the median HDI values for India and Ireland over the years, demonstrating similar trends to the mean values, with Ireland showing higher median values consistently.
+
+Plot 3: Minimum Values Over Time:
+```{r, echo = TRUE}
+# Ploting the minimum values over time for each country:
+ggplot(data = analysis_outcome, aes(x = year, y = min_val, color = country_name), group = country_name) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Minimum Values Over Time",
+       x = "Year",
+       y = "Minimum Value",
+       color = "Country") +
+  theme_minimal()
+
+```
+Interpretation of Plot-3:
+The plot depicts the minimum HDI values over time for India and Ireland, illustrating that India has lower minimum values compared to Ireland, with both countries showing fluctuations over the years.
+
+
+Plot 4: Maximum Values Over Time:
+```{r, echo = TRUE}
+# Ploting the maximum values over time for each country:
+ggplot(data = analysis_outcome, aes(x = year, y = max_val, color = country_name), group = country_name) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Maximum Values Over Time",
+       x = "Year",
+       y = "Maximum Value",
+       color = "Country") +
+  theme_minimal()
+
+```
+Interpretation of Plot-4:
+This plot shows the maximum HDI values for both countries, where Ireland's maximum values are significantly higher than India's, reflecting better overall human development in Ireland.
+
+
+Plot 5: Mean Values of Index Names by Country:
+```{r, echo = TRUE}
+# Calculating the mean value for each country_name and index_name:
+index_mean_outcome <- data_merged[, .(
+  mean_value = base::mean(value, na.rm=TRUE)
+), keyby = .(country_name, index_name)]
+
+# Removing the rows with missing mean values:
+index_mean_outcome <- na.omit(index_mean_outcome)
+
+# Ploting the mean values of index names by country:
+ggplot(index_mean_outcome, aes(x = index_name, y = mean_value, fill = country_name)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Values of Index Names by Country",
+       x = "Index Name",
+       y = "Mean Value",
+       fill = "Country") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+Interpretation of Plot-5:
+The bar chart compares the mean values of various index names (like GII and MPI) between India and Ireland, showing that Ireland has higher mean values across different indices, indicating better performance in human development indicators.
+
