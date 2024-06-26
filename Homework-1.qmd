@@ -1,0 +1,91 @@
+---
+title: "Homework-1(Adv-R)"
+author: "Sayinah Ali(232062)"
+format:
+  html:
+    embed-resources: true
+  pdf: default
+code-fold: true
+editor: visual
+---
+
+# Table of Contents
+
+1. [Introduction](#introduction)
+2. [Descriptive Statistics](#descriptive-statistics)
+3. [Plot](#plot)
+4. [Interpretation of the Plot](#interpretation-of-the-plot)
+
+
+
+### Explanation of Approach-
+
+To accomplish this, I went through the following steps in order to create a Quarto document that includes a plot and descriptive statistics from an R data set:
+
+Step 1: Choose the Data set
+
+Step 2: Create the Quarto Document
+
+Step 3: Write the Content
+
+Step 4: Formatting and Aesthetics
+
+Step 5: Rendering to PDF
+
+Step 6: Commenting the Code
+
+### Introduction: 
+*Analyzing the mtcars dataset*-
+
+R has a famous dataset called mtcars which is full of information on car features like miles per gallon (mpg), number of cylinders, horsepower among others that are mostly used in regression analysis, exploratory data analysis and visualization.
+
+### Descriptive Statistics-
+
+We will focus on two variables for this analysis: - **Miles per gallon (mpg)** - **Horsepower (hp)**
+
+```{r}
+head(mtcars)
+summary(mtcars[, c("mpg", "hp")])
+```
+
+Distribution of the variables:
+```{r}
+par(mfrow = c(1, 2))
+
+# Histogram for mpg
+hist(mtcars$mpg, 
+     main = "Distribution of Miles per Gallon", 
+     xlab = "Miles per Gallon (mpg)", 
+     col = "lightblue", 
+     border = "black")
+
+# Histogram for hp
+hist(mtcars$hp, 
+     main = "Distribution of Horsepower", 
+     xlab = "Horsepower (hp)", 
+     col = "grey", 
+     border = "black")
+```
+
+### Plot- 
+*Horsepower vs. Miles per Gallon*-
+
+We will create a scatter graph for us to see how horsepower is related to miles per gallon. This diagram will enable us to know the effect of horsepower on the fuel economy of automobiles.
+
+```{r}
+# Scatter plot
+plot(mtcars$hp, mtcars$mpg, 
+     main = "Horsepower vs. Miles per Gallon",
+     xlab = "Horsepower (hp)", 
+     ylab = "Miles per Gallon (mpg)", 
+     pch = 19, col = "orange")
+
+# Add a regression line
+abline(lm(mpg ~ hp, data = mtcars), col = "blue")
+```
+
+### Interpretation of the plot-
+
+The scatter plot above visually exhibits the covariance of horsepower and miles per gallon. For each car, there is a point on the chart, with horsepower as the abscissa and miles per gallon as the ordinate.
+
+The blue line shown here is a linear regression line which when observed closely indicates that there is an inverse relationship between horsepower and miles per gallon. This means that cars with more horse power have less fuel efficiency.
